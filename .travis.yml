@@ -1,10 +1,13 @@
 sudo: true
-# dist: trusty
-# cache: false
+dist: trusty
+cache: false
 env:
-- URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+  matrix:
+  - URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+  global:
+    secure: kSSDwYFl3yrHhnstkt8H3R63mxfxNoQYkj5mUBtr4lCsvxZ5XGzIMtgB3UI5WGXzr+AmeQcMWaDcEX48rj5JaRY/ldCFWG3MyPBECgiXs0o9vwNShKGT9L99M726/D32kNZt78USY4fXuZI6mDaGAhJOe8YQu80itmIzzfbJSp1AeiUY+OWKLmuOphsHKs12McmT6ciqTiI5DAxdcDNa1vWdwRfFVg3uBbhahrpogntV1vtvY5W72SD0L+8C9t9AeuXMbi9G3w263Ap0r7uF1239FlbZ5O8S6d4CDTNIzUwgzR5fbPFQH2W0ngcNo7RI47BD3J0bZjVZG2oe5FuuGNY2rKYXgKGUyKZsx53jE2t7yMKk9MGkz01TJTLAjmowmXARvbdhEx653Fm1blqsxksPggiCpoPj0ouGOofPOHT6OyaDyvN3yweY9mTFiE/F7HAOKqOocd+/8fa7vrtEXMnOKZRaOCfqQA4pFyR/SA/jcTJ2wxv2yDzE3POXmGPhOiqh/6/iejJrnwLKPh/+kUyalXtKXvmtP5qlCzHmCvQ2KIDtx0ewCkTIZvUJIR4IaC9d86iLJYR0ls9Is6jBkWjBuohmrJVKPSh4f3Wjb8fsw3ysyK8mPZ7dro4zdnxJzJHuO6VHv7y77X+ZGUO8r1Rnc6bfKFIGViY6CUbI6Z4=
 before_install:
-- openssl aes-256-cbc -K $encrypted_edf0dc8eaa93_key -iv $encrypted_edf0dc8eaa93_iv -in assets/server.key.enc -out assets/server.key -d
+- openssl aes-256-cbc -k "$super_secret_password" -in super_secret.txt.enc -out super_secret.txt -d
 - export SFDX_AUTOUPDATE_DISABLE=true
 - export SFDX_USE_GENERIC_UNIX_KEYCHAIN=true
 - export SFDX_DOMAIN_RETRY=300
@@ -16,11 +19,6 @@ before_install:
 - sfdx plugins --core
 - sfdx force:auth:jwt:grant --clientid $CONSUMERKEY --jwtkeyfile assets/server.key
   --username $USERNAME --setdefaultdevhubusername -a HubOrg
-
-before_script:
-  - export SFDX_DISABLE_ENCRYPTION=true
-  - sfdx force --help
-  - sfdx force:auth:jwt:grant --clientid $CONSUMERKEY --jwtkeyfile assets/server.key --username $USERNAME --setdefaultdevhubusername
 script:
 - sfdx force:org:create -v HubOrg -s -f config/project-scratch-def.json -a ciorg
 - sfdx force:source:push -u ciorg
